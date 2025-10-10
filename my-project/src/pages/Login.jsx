@@ -1,22 +1,23 @@
 // src/pages/Login.jsx
 
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom"; // 👈 Add Link here 
-import api, { setAuthToken } from '../utils/api'; // 👈 Import the api utility
+import { useNavigate, Link } from "react-router-dom";
+import api from '../utils/api'; 
+import { useResume } from "../context/ResumeContext"; // ✨ IMPORT useResume HOOK ✨
 
 export default function Login() {
-  const [email, setEmail] = useState("test@example.com"); // Prefill for easy testing
-  const [password, setPassword] = useState("123456"); // Prefill for easy testing
+  const [email, setEmail] = useState("test@example.com");
+  const [password, setPassword] = useState("123456");
   const navigate = useNavigate();
+  const { login } = useResume(); // ✨ GET THE LOGIN FUNCTION FROM CONTEXT ✨
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/login', { email, password });
       
-      // On successful login, the server sends back a token.
-      // We set this token for all future requests and navigate to the dashboard.
-      setAuthToken(res.data.token);
+      login(res.data.token); // ✨ USE THE CONTEXT'S LOGIN FUNCTION ✨
+      
       navigate("/dashboard");
 
     } catch (err) {
@@ -31,7 +32,6 @@ export default function Login() {
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Login to AI Resume Builder
         </h2>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div>
@@ -47,7 +47,6 @@ export default function Login() {
               required
             />
           </div>
-
           {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -62,7 +61,6 @@ export default function Login() {
               required
             />
           </div>
-
           {/* Submit Button */}
           <button
             type="submit"
@@ -71,7 +69,6 @@ export default function Login() {
             Login
           </button>
         </form>
-           {/* 👇 Add this paragraph below the form */}
         <p className="text-center text-sm text-gray-600 mt-4">
           Don't have an account?{" "}
           <Link to="/register" className="font-medium text-blue-600 hover:underline">
@@ -81,4 +78,4 @@ export default function Login() {
       </div>
     </div>
   );
-  }
+}

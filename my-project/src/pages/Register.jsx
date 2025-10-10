@@ -26,9 +26,11 @@ export default function Register() {
       setAuthToken(res.data.token);
       navigate("/dashboard");
     } catch (err) {
-      console.error("Registration Error:", err.response ? err.response.data : err.message);
-      alert("Error: Could not register user. The email may already be in use.");
-    }
+  // This will get the specific error message from the backend if it exists
+  const message = err.response?.data?.msg || "Could not register user. Please try again.";
+  console.error("Registration Error:", err.response ? err.response.data : err.message);
+  alert(`Error: ${message}`);
+}
   };
 
   return (
