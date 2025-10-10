@@ -8,6 +8,7 @@ import { Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import ResumeForm from "./pages/ResumeForm";
 import Login from "./pages/Login"; 
+import Register from "./pages/Register"; // 👈 Import the new component
 import ExperienceForm from "./pages/ExperienceForm";
 import ExperienceDescription from "./pages/ExperienceDescription";
 import ReviewExperience from "./pages/ReviewExperience.jsx";
@@ -21,6 +22,7 @@ function App() {
     // 🛑 CORRECT: The component now only defines the routing structure.
     <Routes>
       <Route path="/" element={<Login />} />
+      <Route path="/register" element={<Register />} /> {/* 👈 Add this route */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/resumeform" element={<ResumeForm />} />
       <Route path="/myresumes" element={<h1>My Resumes Page (WIP)</h1>} />

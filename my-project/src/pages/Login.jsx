@@ -1,17 +1,26 @@
+// src/pages/Login.jsx
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // 👈 Add Link here 
+import api, { setAuthToken } from '../utils/api'; // 👈 Import the api utility
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("test@example.com"); // Prefill for easy testing
+  const [password, setPassword] = useState("123456"); // Prefill for easy testing
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const res = await api.post('/auth/login', { email, password });
+      
+      // On successful login, the server sends back a token.
+      // We set this token for all future requests and navigate to the dashboard.
+      setAuthToken(res.data.token);
+      navigate("/dashboard");
 
-    if (email === "test@example.com" && password === "123456") {
-      navigate("/dashboard");  // ✅ redirects
-    } else {
+    } catch (err) {
+      console.error("Login Error:", err.response ? err.response.data : err.message);
       alert("❌ Invalid email or password");
     }
   };
@@ -62,7 +71,14 @@ export default function Login() {
             Login
           </button>
         </form>
+           {/* 👇 Add this paragraph below the form */}
+        <p className="text-center text-sm text-gray-600 mt-4">
+          Don't have an account?{" "}
+          <Link to="/register" className="font-medium text-blue-600 hover:underline">
+            Register
+          </Link>
+        </p>
       </div>
     </div>
   );
-}
+  }

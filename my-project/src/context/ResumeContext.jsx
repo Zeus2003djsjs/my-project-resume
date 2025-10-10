@@ -1,101 +1,90 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+// src/context/ResumeContext.jsx
+
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import api, { setAuthToken } from '../utils/api';
 
 const ResumeContext = createContext();
 
-// --- Configuration ---
-const STORAGE_KEY = 'resumeBuilderData';
-
-// --- Initial State Structure ---
-// Defines the master structure of the resume data, matching your forms
 const getInitialState = () => ({
-    // Step 1: Personal Info (simple object)
     personalInfo: { firstName: '', surname: '', city: '', country: '', pin: '', phone: '', email: '' },
-    // Step 2: Experience (Array to hold multiple job entries)
-    experiences: [], 
-    // Step 3: Education (Array to hold multiple entries)
+    experiences: [],
     education: [],
-    // Step 4: Skills (Stored as the raw editor text)
-    skills: '', 
-    // Step 5: Summary (Stored as the raw editor text)
+    skills: '',
     summary: '',
-    // Draft field for the job currently being entered in the ExperienceForm
-    currentJobDraft: {}, 
-    // Placeholder for other sections (More Details, etc.)
-    moreDetails: {}, 
+    moreDetails: {},
 });
 
-// --- The Provider Component ---
 export function ResumeProvider({ children }) {
+  const [resumeData, setResumeData] = useState(getInitialState());
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // 1. Logic to load saved data from Local Storage on startup
-    const loadState = () => {
-        try {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-            if (savedData === null) {
-                return getInitialState();
-            }
-            // Load and safely merge with the initial structure
-            return { ...getInitialState(), ...JSON.parse(savedData) };
-        } catch (error) {
-            console.error("Could not load data from Local Storage:", error);
-            // If data is corrupted, clear it and start fresh
-            localStorage.removeItem(STORAGE_KEY); 
-            return getInitialState();
-        }
-    };
+  // Effect to load user data on app start
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setAuthToken(token);
+      setIsAuthenticated(true);
+      loadResume(); // Load resume data if token exists
+    }
+  }, []);
 
-    const [resumeData, setResumeData] = useState(loadState);
+  // Function to load resume data from the backend
+  const loadResume = async () => {
+    try {
+      const res = await api.get('/resumes');
+      // If resume exists on backend, set it. Otherwise, use initial state.
+      if (res.data) {
+        setResumeData({ ...getInitialState(), ...res.data });
+      }
+    } catch (err) {
+      console.error('Could not load resume.', err);
+      // Handle case where user is authenticated but has no resume yet
+      setResumeData(getInitialState());
+    }
+  };
 
-    // 2. useEffect hook to save data to Local Storage whenever resumeData changes
-    useEffect(() => {
-        try {
-            // This ensures data persists automatically across refreshes
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeData));
-        } catch (error) {
-            console.error("Could not save data to Local Storage:", error);
-        }
-    }, [resumeData]);
+  // Universal function to save the entire resume to the backend
+  const saveResume = async (updatedData) => {
+    if (!isAuthenticated) return; // Don't save if not logged in
+    try {
+      // The POST route on the backend handles both create and update
+      const res = await api.post('/resumes', updatedData);
+      setResumeData(res.data);
+    } catch (err) {
+      console.error('Error saving resume:', err);
+    }
+  };
 
-    // 3. Universal Update Function (Used for simple sections like personalInfo, skills, summary)
-    // This is what your ResumeForm.jsx and SkillsForm.jsx will call.
-    const updateSection = (sectionName, data) => {
-        setResumeData(prev => ({
-            ...prev,
-            [sectionName]: data 
-        }));
-    };
-    
-    // 4. Function for adding array entries (used when clicking 'Continue' on a job form)
-    const addExperience = (newJobData) => {
-        const newEntry = { 
-            ...newJobData, 
-            id: Date.now().toString() // Unique ID for list management
-        };
-        setResumeData(prev => ({
-            ...prev,
-            experiences: [...prev.experiences, newEntry]
-        }));
-    };
-    
-    // NOTE: You would add other array helpers here (editExperience, deleteExperience, addEducation)
+  // Modified updateSection to save after every change
+  const updateSection = (sectionName, data) => {
+    const updatedData = { ...resumeData, [sectionName]: data };
+    setResumeData(updatedData);
+    saveResume(updatedData);
+  };
+  
+  // Modified addExperience to save after adding a new entry
+  const addExperience = (newJobData) => {
+    const newEntry = { ...newJobData, id: Date.now().toString() };
+    const updatedExperiences = [...resumeData.experiences, newEntry];
+    const updatedData = { ...resumeData, experiences: updatedExperiences };
+    setResumeData(updatedData);
+    saveResume(updatedData);
+  };
 
-    const contextValue = {
-        // Data provided to all components
-        resumeData,
-        // Functions provided to all components
-        updateSection,
-        addExperience,
-    };
+  const contextValue = {
+    resumeData,
+    updateSection,
+    addExperience,
+    isAuthenticated,
+  };
 
-    return (
-        <ResumeContext.Provider value={contextValue}>
-            {children}
-        </ResumeContext.Provider>
-    );
+  return (
+    <ResumeContext.Provider value={contextValue}>
+      {children}
+    </ResumeContext.Provider>
+  );
 }
 
-// 5. Hook for components to access the context
 export function useResume() {
-    // This hook is what your form components call: const { resumeData, updateSection } = useResume();
-    return useContext(ResumeContext);
+  return useContext(ResumeContext);
 }
