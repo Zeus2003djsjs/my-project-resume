@@ -1,146 +1,47 @@
 // src/pages/ResumePreview.jsx
+
 import React from "react";
 
-export default function ResumePreview({ formData, experienceData }) {
-    
-    // 1. Destructure basic job details from experienceData (used by ExperienceForm.jsx)
-    const { 
-        jobTitle: expJobTitle, 
-        employer: expEmployer, 
-        city, country, 
-        startMonth, startYear, endMonth, endYear, current 
-    } = experienceData || {};
-    
-    // 2. Destructure description and overrides from formData (used by ExperienceDescription.jsx)
-    const { 
-        description: descFromForm, // This holds the description text
-        jobTitle: formJobTitle,   // These may override expJobTitle/expEmployer
-        employer: formEmployer,
-    } = formData || {};
-    
-    // Determine the final values, prioritizing the data from formData where available
-    const finalJobTitle = formJobTitle || expJobTitle || "Job Title";
-    const finalEmployer = formEmployer || expEmployer || "Employer";
-    
-    // The description is the text area content from ExperienceDescription.jsx
-    const finalDescription = descFromForm; 
+// ✨ NO MORE forwardRef! This is now a simple component. ✨
+const ResumePreview = (props) => {
+    const { formData, experiences, educationData, skills, summary, moreDetails } = props;
+
+    const experienceList = Array.isArray(experiences) ? experiences : (experiences ? [experiences] : []);
+    const educationList = Array.isArray(educationData) ? educationData : (educationData ? [educationData] : []);
+    const safeMoreDetails = moreDetails || {};
 
     return (
-        <div className="bg-white w-full max-w-sm border rounded-xl shadow-lg p-4">
+        // The ref is no longer needed here
+        <div className="bg-white w-full max-w-sm border rounded-xl shadow-lg p-4 text-gray-800">
+            {/* Personal Info */}
             <div className="text-center mb-4">
-                <div className="text-2xl font-bold">
-                    {formData.firstName || "Your"} {formData.surname || "Name"}
-                </div>
-                <p className="text-sm text-gray-600">
-                    {formData.city || "City"}, {formData.country || "Country"}{" "}
-                    {formData.pin && `, ${formData.pin}`}
-                </p>
-                <p className="text-sm text-gray-600">
-                    {formData.email || "email@example.com"} | {formData.phone || "+91 XXXXX XXXXX"}
-                </p>
+                <div className="text-2xl font-bold">{formData?.firstName || "Your"} {formData?.surname || "Name"}</div>
+                <p className="text-sm text-gray-600">{formData?.city || "City"}, {formData?.country || "Country"}</p>
+                <p className="text-sm text-gray-600">{formData?.email || "email@example.com"} | {formData?.phone || "Phone"}</p>
             </div>
 
-            <hr className="my-2" />
+            {/* Summary */}
+            {summary && (<><hr className="my-2" /><section className="text-left text-sm"><h3 className="font-semibold mb-1 text-gray-900">Summary</h3><p dangerouslySetInnerHTML={{ __html: summary }} /></section></>)}
 
-            <section className="text-left text-sm text-gray-700">
-                <h3 className="font-semibold mb-1 text-gray-900">Summary</h3>
-                <p>
-                    Customer-focused Retail Sales professional with strong understanding of
-                    marketing, communication, and customer service. Demonstrated record of
-                    achieving goals and exceeding targets.
-                </p>
-            </section>
+            {/* Skills */}
+            {skills && (<><hr className="my-2" /><section className="text-left text-sm"><h3 className="font-semibold mb-1 text-gray-900">Skills</h3><div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: skills }} /></section></>)}
 
-            <hr className="my-2" />
+            {/* Experience */}
+            {experienceList.length > 0 && (<><hr className="my-2" /><section className="text-left text-sm"><h3 className="font-semibold mb-1 text-gray-900">Experience</h3>{experienceList.map((job, index) => (<div key={job._id || index} className="mb-3"><p className="font-medium">{job.jobTitle || 'Job Title'} @ {job.employer || 'Employer'}</p><p className="text-xs text-gray-500 mb-1">{job.startMonth || 'Month'} {job.startYear || 'Year'} - {job.current ? "Present" : `${job.endMonth || 'Month'} ${job.endYear || 'Year'}`} | {job.city || 'City'}</p>{job.description && (<ul className="list-disc list-inside">{job.description.split('\n').filter(line => line.trim()).map((line, idx) => (<li key={idx} dangerouslySetInnerHTML={{ __html: line }} />))}</ul>)}</div>))}</section></>)}
 
-            <section className="text-left text-sm text-gray-700">
-                <h3 className="font-semibold mb-1 text-gray-900">Skills</h3>
-                <ul className="list-disc list-inside">
-                    <li>Cash register operation</li>
-                    <li>POS system operation</li>
-                    <li>Sales expertise</li>
-                    <li>Inventory management</li>
-                </ul>
-            </section>
+            {/* Education */}
+            {educationList.length > 0 && (<><hr className="my-2" /><section className="text-left text-sm"><h3 className="font-semibold mb-1 text-gray-900">Education</h3>{educationList.map((edu, index) => (<div key={edu._id || index} className="mb-2"><p className="font-medium">{edu.degree || 'Degree'} in {edu.fieldOfStudy || 'Field of Study'}</p><p className="text-xs text-gray-500">{edu.schoolName || 'School Name'} | {edu.gradYear || 'Year'}</p></div>))}</section></>)}
 
-            <hr className="my-2" />
-
-            <section className="text-left text-sm text-gray-700">
-                <h3 className="font-semibold mb-1 text-gray-900">Experience</h3>
-
-                {/* Check if any essential experience data exists to show the dynamic content */}
-                {finalJobTitle !== "Job Title" || finalEmployer !== "Employer" || startYear || finalDescription ? (
-                    <>
-                        {/* Job Title and Employer (now using the combined final variables) */}
-                        <p className="font-medium">
-                            {finalJobTitle} @ {finalEmployer}
-                        </p>
-                        
-                        {/* Duration and Location */}
-                        <p className="text-xs text-gray-500 mb-2">
-                            {/* Start Date: Conditionally display month and year */}
-                            {(startMonth && startMonth !== 'Month' ? `${startMonth} ` : '')}
-                            {(startYear && startYear !== 'Year' ? startYear : 'Start Year')}
-                            
-                            {' - '}
-                            
-                            {/* End Date: Check 'current' checkbox first, otherwise show month/year */}
-                            {current ? 
-                                "Present" : 
-                                (
-                                    (endMonth && endMonth !== 'Month' ? `${endMonth} ` : '') + 
-                                    (endYear && endYear !== 'Year' ? endYear : 'End Year')
-                                )
-                            } 
-                            
-                            {/* Location: Combine city and country */}
-                            {' | '}
-                            {city || "City"} {country ? `, ${country}` : ''}
-                        </p>
-
-                        {/* Bullet Points/Description: Use the finalDescription variable */}
-                        {finalDescription ? (
-                            // NEW CODE - Correctly renders the HTML
-<ul className="list-disc list-inside mt-1">
-    {finalDescription
-        .split("\n")
-        .filter((line) => line.trim() !== "")
-        .map((line, index) => (
-            <li 
-                key={index}
-                // Use dangerouslySetInnerHTML to process the HTML tags
-                dangerouslySetInnerHTML={{ __html: line.trim() }}
-            />
-        ))}
-</ul>
-                        ) : (
-                            // Fallback to static bullet points if only job title/employer are present
-                            <ul className="list-disc list-inside">
-                                <li>Increased monthly sales by 10% through effective upselling.</li>
-                                <li>Maintained high customer satisfaction ratings.</li>
-                            </ul>
-                        )}
-                    </>
-                ) : (
-                    /* Show STATIC placeholder data when no dynamic data is entered in either step */
-                    <>
-                        <p className="font-medium">Retail Sales Associate @ ZARA</p>
-                        <p className="text-xs text-gray-500 mb-2">2017 - Present | New Delhi</p>
-                        <ul className="list-disc list-inside">
-                            <li>Increased monthly sales by 10% through effective upselling.</li>
-                            <li>Maintained high customer satisfaction ratings.</li>
-                        </ul>
-                    </>
-                )}
-            </section>
-
-            <hr className="my-2" />
-
-            <section className="text-left text-sm text-gray-700">
-                <h3 className="font-semibold mb-1 text-gray-900">Education</h3>
-                <p className="font-medium">Diploma in Financial Accounting</p>
-                <p className="text-xs text-gray-500">Oxford Software Institute, 2016</p>
+            {/* More Details */}
+            {(safeMoreDetails.activities || safeMoreDetails.awards || safeMoreDetails.certifications || safeMoreDetails.languages?.some(l => l.language)) && (<hr className="my-2" />)}
+            <section className="text-left text-sm">
+                {safeMoreDetails.activities && (<div className="mb-2"><h3 className="font-semibold mb-1 text-gray-900">Activities</h3><p className="whitespace-pre-wrap">{safeMoreDetails.activities}</p></div>)}
+                {safeMoreDetails.awards && (<div className="mb-2"><h3 className="font-semibold mb-1 text-gray-900">Awards</h3><p className="whitespace-pre-wrap">{safeMoreDetails.awards}</p></div>)}
+                {safeMoreDetails.certifications && (<div className="mb-2"><h3 className="font-semibold mb-1 text-gray-900">Certifications</h3><p className="whitespace-pre-wrap">{safeMoreDetails.certifications}</p></div>)}
+                {safeMoreDetails.languages?.some(lang => lang.language) && (<div><h3 className="font-semibold mb-1 text-gray-900">Languages</h3><ul className="list-disc list-inside">{safeMoreDetails.languages.filter(lang => lang.language).map((lang, index) => (<li key={index}>{lang.language} ({lang.proficiency})</li>))}</ul></div>)}
             </section>
         </div>
     );
-}
+};
+
+export default ResumePreview;

@@ -1,9 +1,19 @@
+// src/pages/Dashboard.jsx
+
 import { motion } from "framer-motion";
 import { FilePlus, FolderOpen, Settings, LogOut } from "lucide-react";
-import { Link } from "react-router-dom"; // ✅ keep import at the top
+import { Link, useNavigate } from "react-router-dom"; // ✨ IMPORT useNavigate ✨
+import { useResume } from "../context/ResumeContext"; // ✨ IMPORT useResume HOOK ✨
 
 export default function Dashboard() {
-  const userName = "Johny"; // Later, fetch from login session or DB
+  const userName = "Johny"; 
+  const { logout } = useResume(); // ✨ GET THE LOGOUT FUNCTION FROM CONTEXT ✨
+  const navigate = useNavigate(); // ✨ INITIALIZE NAVIGATE ✨
+
+  const handleLogout = () => {
+    logout();
+    navigate("/"); // Redirect to the login page after logging out
+  };
 
   const cards = [
     {
@@ -12,7 +22,7 @@ export default function Dashboard() {
       icon: <FilePlus size={28} className="text-white" />,
       button: "Get Started",
       gradient: "from-blue-500 to-blue-700",
-      link: "/resumeform", // ✅ correct route
+      link: "/resumeform",
     },
     {
       title: "My Resumes",
@@ -37,7 +47,11 @@ export default function Dashboard() {
       {/* Header */}
       <header className="flex justify-between items-center mb-10">
         <h1 className="text-3xl font-bold text-white">AI Resume Builder ✨</h1>
-        <button className="flex items-center bg-red-500/80 backdrop-blur-md text-white px-4 py-2 rounded-lg hover:bg-red-600/90 transition">
+        {/* ✨ UPDATE THE BUTTON'S onClick HANDLER ✨ */}
+        <button 
+          onClick={handleLogout}
+          className="flex items-center bg-red-500/80 backdrop-blur-md text-white px-4 py-2 rounded-lg hover:bg-red-600/90 transition"
+        >
           <LogOut size={18} className="mr-2" /> Logout
         </button>
       </header>
@@ -66,8 +80,6 @@ export default function Dashboard() {
               <h3 className="text-lg font-semibold">{card.title}</h3>
             </div>
             <p className="mb-6 opacity-90">{card.description}</p>
-
-            {/* ✅ Correct placement for the Link */}
             <Link to={card.link}>
               <button className="bg-white text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 transition">
                 {card.button}
@@ -78,4 +90,4 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+} 

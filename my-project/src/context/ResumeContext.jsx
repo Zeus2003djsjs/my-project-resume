@@ -5,6 +5,7 @@ import api, { setAuthToken } from '../utils/api';
 
 const ResumeContext = createContext();
 
+// Add a temporary draft field to our initial state
 const getInitialState = () => ({
     personalInfo: { firstName: '', surname: '', city: '', country: '', pin: '', phone: '', email: '' },
     experiences: [],
@@ -12,6 +13,7 @@ const getInitialState = () => ({
     skills: '',
     summary: '',
     moreDetails: {},
+    currentJobDraft: {}, // This will hold data from the first experience form
 });
 
 export function ResumeProvider({ children }) {
@@ -38,18 +40,23 @@ export function ResumeProvider({ children }) {
       setResumeData(getInitialState());
     }
   };
-  
-  // ✨ NEW FUNCTION TO HANDLE LOGIN STATE ✨
+
   const login = (token) => {
     setAuthToken(token);
     setIsAuthenticated(true);
-    loadResume(); // Load the user's resume immediately after login
+    loadResume();
+  };
+
+  const logout = () => {
+    setAuthToken(null);
+    setIsAuthenticated(false);
+    setResumeData(getInitialState());
   };
 
   const saveResume = async (updatedData) => {
     if (!isAuthenticated) {
-      console.log("Not authenticated, skipping save."); // Helpful for debugging
-      return; 
+      console.log("Not authenticated, skipping save.");
+      return;
     }
     try {
       const res = await api.post('/resumes', updatedData);
@@ -59,26 +66,106 @@ export function ResumeProvider({ children }) {
     }
   };
 
+  // This function is now also used to update the job draft without saving to the backend
   const updateSection = (sectionName, data) => {
     const updatedData = { ...resumeData, [sectionName]: data };
     setResumeData(updatedData);
-    saveResume(updatedData);
+    // Only save the entire resume for final sections, not for the temporary draft
+    if (sectionName !== 'currentJobDraft') {
+        saveResume(updatedData);
+    }
   };
+
+  // ✨ This function is now called from the *description* page to finalize and save the experience
+  const addExperience = (descriptionData) => {
+    if (!isAuthenticated) return;
+
+    // Combine the draft from step 1 with the description from step 2
+    const finalExperience = {
+      ...resumeData.currentJobDraft,
+      ...descriptionData,
+    };
+    
+    const updatedExperiences = [...resumeData.experiences, finalExperience];
+    
+    // Create the final resume data object to be saved
+    const finalResumeData = {
+      ...resumeData,
+      experiences: updatedExperiences,
+      currentJobDraft: {}, // Clear the draft for the next entry
+    };
+    
+    setResumeData(finalResumeData);
+    saveResume(finalResumeData); // Save the complete, updated resume to the backend
+  };
+
+  const deleteExperience = async (experienceId) => {
+    if (!isAuthenticated) return;
+    try {
+      const res = await api.delete(`/resumes/experience/${experienceId}`);
+      setResumeData(res.data);
+    } catch (err) {
+      console.error('Error deleting experience:', err);
+    }
+  };
+
+  // ✨ NEW FUNCTION TO UPDATE AN EXPERIENCE ✨
+  const updateExperience = async (experienceId, experienceData) => {
+    if (!isAuthenticated) return;
+    try {
+      // Call the new PUT endpoint on the backend
+      const res = await api.put(`/resumes/experience/${experienceId}`, experienceData);
+      // Update the frontend state with the updated resume
+      setResumeData(res.data);
+    } catch (err) {
+      console.error('Error updating experience:', err);
+    }
+  };
+
   
-  const addExperience = (newJobData) => {
-    const newEntry = { ...newJobData, id: Date.now().toString() };
-    const updatedExperiences = [...resumeData.experiences, newEntry];
-    const updatedData = { ...resumeData, experiences: updatedExperiences };
+  // ✨ NEW EDUCATION FUNCTIONS ✨
+
+  const addEducation = (educationData) => {
+    if (!isAuthenticated) return;
+    const updatedEducation = [...resumeData.education, educationData];
+    const updatedData = { ...resumeData, education: updatedEducation };
     setResumeData(updatedData);
-    saveResume(updatedData);
+    saveResume(updatedData); // Save the whole resume
   };
+
+  const updateEducation = async (educationId, educationData) => {
+    if (!isAuthenticated) return;
+    try {
+      const res = await api.put(`/resumes/education/${educationId}`, educationData);
+      setResumeData(res.data);
+    } catch (err) {
+      console.error('Error updating education:', err);
+    }
+  };
+
+  const deleteEducation = async (educationId) => {
+    if (!isAuthenticated) return;
+    try {
+      const res = await api.delete(`/resumes/education/${educationId}`);
+      setResumeData(res.data);
+    } catch (err) {
+      console.error('Error deleting education:', err);
+    }
+  };
+
 
   const contextValue = {
     resumeData,
     updateSection,
     addExperience,
+    deleteExperience,
+    updateExperience, // ✨ EXPORT THE NEW FUNCTION ✨
+    addEducation,     // ✨ EXPORT NEW FUNCTION 
+    updateEducation,  // ✨ EXPORT NEW FUNCTION
+    deleteEducation,  // ✨ EXPORT NEW FUNCTION
     isAuthenticated,
-    login, // ✨ EXPORT THE NEW FUNCTION ✨
+    login,
+    logout,
   };
 
   return (

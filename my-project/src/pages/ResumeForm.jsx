@@ -1,42 +1,36 @@
-import React, { useState, useEffect } from "react"; // 👈 ADDED useEffect import
+// src/pages/ResumeForm.jsx
+
+import React, { useState, useEffect } from "react"; 
 import ResumePreview from "./ResumePreview";
 import { useNavigate } from "react-router-dom";
-// NOTE: Assuming "../context/ResumeContext.jsx" is the correct relative path
 import { useResume } from "../context/ResumeContext.jsx"; 
 
 export default function ResumeForm() {
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
-
-    // 🛑 FIX 1: Destructure the central resume data and the universal update function
     const { resumeData, updateSection } = useResume(); 
 
-    // 🛑 FIX 2: Initialize local state with data loaded from context
-    // This correctly reads the current saved state or the initial empty state.
+    // Initialize local state with data from context
     const [formData, setFormData] = useState(resumeData.personalInfo); 
 
+    // ✨ ADD THIS useEffect HOOK ✨
+    // This effect ensures that if the resume data is loaded from the server
+    // after the component has already mounted, the form will update with the new data.
+    useEffect(() => {
+        setFormData(resumeData.personalInfo);
+    }, [resumeData.personalInfo]); // The effect runs whenever personalInfo in the context changes
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        
-        // 1. Update local state
         const newFormData = { ...formData, [name]: value };
-        setFormData(newFormData);
-        
-        // 2. 🛑 FIX 3: Update global context on every change for persistence/live preview
-        updateSection('personalInfo', newFormData);
+        setFormData(newFormData); // Update local state for immediate UI feedback
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        // Final save (optional, but good practice before navigating)
-        updateSection('personalInfo', formData); 
-        
-        navigate("/experience");  // Go to the Experience page
+        updateSection('personalInfo', formData); // Save final state to context and backend
+        navigate("/experience");
     };
-
-    // NOTE: The rest of your JSX correctly uses formData and the handlers.
 
     return (
         <div className="flex min-h-screen bg-gray-50">
@@ -63,7 +57,7 @@ export default function ResumeForm() {
                             <input
                                 type="text"
                                 name="firstName"
-                                value={formData.firstName}
+                                value={formData.firstName || ''}
                                 onChange={handleChange}
                                 className="w-full border rounded-md px-3 py-2"
                                 placeholder="Diya"
@@ -78,7 +72,7 @@ export default function ResumeForm() {
                             <input
                                 type="text"
                                 name="surname"
-                                value={formData.surname}
+                                value={formData.surname || ''}
                                 onChange={handleChange}
                                 className="w-full border rounded-md px-3 py-2"
                                 placeholder="Agarwal"
@@ -93,7 +87,7 @@ export default function ResumeForm() {
                             <input
                                 type="text"
                                 name="city"
-                                value={formData.city}
+                                value={formData.city || ''}
                                 onChange={handleChange}
                                 className="w-full border rounded-md px-3 py-2"
                                 placeholder="New Delhi"
@@ -108,7 +102,7 @@ export default function ResumeForm() {
                             <input
                                 type="text"
                                 name="country"
-                                value={formData.country}
+                                value={formData.country || ''}
                                 onChange={handleChange}
                                 className="w-full border rounded-md px-3 py-2"
                                 placeholder="India"
@@ -123,7 +117,7 @@ export default function ResumeForm() {
                             <input
                                 type="text"
                                 name="pin"
-                                value={formData.pin}
+                                value={formData.pin || ''}
                                 onChange={handleChange}
                                 className="w-full border rounded-md px-3 py-2"
                                 placeholder="110034"
@@ -138,7 +132,7 @@ export default function ResumeForm() {
                             <input
                                 type="text"
                                 name="phone"
-                                value={formData.phone}
+                                value={formData.phone || ''}
                                 onChange={handleChange}
                                 className="w-full border rounded-md px-3 py-2"
                                 placeholder="+91 11 1234 5677"
@@ -153,7 +147,7 @@ export default function ResumeForm() {
                             <input
                                 type="email"
                                 name="email"
-                                value={formData.email}
+                                value={formData.email || ''}
                                 onChange={handleChange}
                                 className="w-full border rounded-md px-3 py-2"
                                 placeholder="d.agarwal@sample.in"
@@ -176,7 +170,6 @@ export default function ResumeForm() {
                     >
                         Continue
                     </button>
-
                 </div>
 
                 {/* Footer Links */}
@@ -192,7 +185,7 @@ export default function ResumeForm() {
             {/* Resume Preview (Clickable) */}
             <aside className="w-1/3 bg-white flex flex-col items-center p-4 shadow-lg">
                 <div
-                    onClick={() => setShowModal(true)} // 👈 open popup
+                    onClick={() => setShowModal(true)} 
                     className="cursor-pointer hover:scale-105 transition-transform"
                 >
                     <ResumePreview formData={formData} />
@@ -210,15 +203,12 @@ export default function ResumeForm() {
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 p-6 relative overflow-y-auto max-h-[90vh]">
-                        {/* Close button */}
                         <button
                             onClick={() => setShowModal(false)}
                             className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                         >
                             ✕
                         </button>
-
-                        {/* Full-size Resume Preview */}
                         <ResumePreview formData={formData} />
                     </div>
                 </div>
