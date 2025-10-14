@@ -10,7 +10,7 @@ import { Download, Edit } from 'lucide-react';
 export default function Finalize() {
     const navigate = useNavigate();
     const { resumeData } = useResume();
-    const componentRef = useRef(); // This ref will point to the wrapper div
+    const componentRef = useRef();
 
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -36,17 +36,16 @@ export default function Finalize() {
 
             {/* Right Panel */}
             <main className="flex-1 p-8 flex items-center justify-center">
-                {/* ✨ THE REF IS NOW ON THIS WRAPPER DIV ✨ */}
-                <div ref={componentRef} className="w-full max-w-2xl">
-                    <ResumePreview
-                        formData={resumeData.personalInfo}
-                        experiences={resumeData.experiences}
-                        educationData={resumeData.education}
-                        skills={resumeData.skills}
-                        summary={resumeData.summary}
-                        moreDetails={resumeData.moreDetails} // Pass the moreDetails data
-                    />
-                </div>
+                {/* Pass the ref directly to the ResumePreview component */}
+                <ResumePreview
+                    ref={componentRef}
+                    formData={resumeData.personalInfo}
+                    experiences={resumeData.experiences}
+                    educationData={resumeData.education}
+                    skills={resumeData.skills}
+                    summary={resumeData.summary}
+                    moreDetails={resumeData.moreDetails}
+                />
             </main>
         </div>
     );

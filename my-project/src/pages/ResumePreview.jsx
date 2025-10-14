@@ -2,8 +2,8 @@
 
 import React from "react";
 
-// ✨ NO MORE forwardRef! This is now a simple component. ✨
-const ResumePreview = (props) => {
+// Wrap the component in React.forwardRef
+const ResumePreview = React.forwardRef((props, ref) => {
     const { formData, experiences, educationData, skills, summary, moreDetails } = props;
 
     const experienceList = Array.isArray(experiences) ? experiences : (experiences ? [experiences] : []);
@@ -11,8 +11,8 @@ const ResumePreview = (props) => {
     const safeMoreDetails = moreDetails || {};
 
     return (
-        // The ref is no longer needed here
-        <div className="bg-white w-full max-w-sm border rounded-xl shadow-lg p-4 text-gray-800">
+        // Attach the forwarded ref to the main div
+        <div ref={ref} className="bg-white w-full max-w-sm border rounded-xl shadow-lg p-4 text-gray-800">
             {/* Personal Info */}
             <div className="text-center mb-4">
                 <div className="text-2xl font-bold">{formData?.firstName || "Your"} {formData?.surname || "Name"}</div>
@@ -42,6 +42,6 @@ const ResumePreview = (props) => {
             </section>
         </div>
     );
-};
+});
 
 export default ResumePreview;
