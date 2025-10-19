@@ -1,7 +1,7 @@
 // src/pages/ResumeForm.jsx
 
 import React, { useState, useEffect } from "react"; 
-import ResumePreview from "./ResumePreview";
+import ResumePreview from "../templates/Template1"; // Updated path
 import { useNavigate } from "react-router-dom";
 import { useResume } from "../context/ResumeContext.jsx"; 
 

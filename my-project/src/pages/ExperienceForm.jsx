@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom"; // Import useParams
-import ResumePreview from "./ResumePreview";
+import ResumePreview from "../templates/Template1"; // Updated path
 import { useResume } from "../context/ResumeContext.jsx";
 
 export default function ExperienceForm() {

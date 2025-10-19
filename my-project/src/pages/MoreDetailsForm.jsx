@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ResumePreview from "./ResumePreview";
+import ResumePreview from "../templates/Template1"; // Updated path
 import { useResume } from "../context/ResumeContext"; // Import the context hook
 
 // --- Reusable Components ---
@@ -138,7 +138,7 @@ export default function MoreDetailsForm() {
                     summary={resumeData.summary}
                     moreDetails={detailsData} // ✨ ADD THIS LINE
                 />  
-/>
+
                 <div className="text-center mt-4">
                     <button className="text-blue-600 font-semibold hover:underline">Change template</button>
                 </div>

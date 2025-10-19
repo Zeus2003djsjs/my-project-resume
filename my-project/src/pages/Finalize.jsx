@@ -1,52 +1,81 @@
 // src/pages/Finalize.jsx
 
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { useResume } from '../context/ResumeContext';
-import ResumePreview from './ResumePreview';
-import { Download, Edit } from 'lucide-react';
+
+// Import the components
+import LeftSidebar from './LeftSidebar';
+import RightSidebar from './RightSidebar';
+import Template1 from '../templates/Template1';
+import Template2 from '../templates/Template2';
+import Template3 from '../templates/Template3'; // Import the new template
 
 export default function Finalize() {
-    const navigate = useNavigate();
     const { resumeData } = useResume();
     const componentRef = useRef();
+    const navigate = useNavigate();
+    
+    // State for managing design choices
+    const [selectedTemplate, setSelectedTemplate] = useState('Template1');
+    const [selectedColor, setSelectedColor] = useState('#000000');
 
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
-        documentTitle: `${resumeData.personalInfo.firstName}_${resumeData.personalInfo.surname}_Resume`,
+        documentTitle: `${resumeData.personalInfo.firstName}_Resume`,
     });
 
-    return (
-        <div className="min-h-screen bg-gray-100 flex flex-col lg:flex-row">
-            {/* Left Panel */}
-            <aside className="w-full lg:w-1/4 bg-white p-8 shadow-md">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Finalize Your Resume</h1>
-                <p className="text-gray-600 mb-8">Your resume is ready! You can now download it as a PDF.</p>
-                <button onClick={handlePrint} className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition flex items-center justify-center mb-4">
-                    <Download className="mr-2" size={20} />
-                    Download as PDF
-                </button>
-                <p className="text-xs text-gray-500 text-center mb-4">Note: When the print dialog opens, set the "Destination" to "Save as PDF".</p>
-                <button onClick={() => navigate('/dashboard')} className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-bold hover:bg-gray-300 transition flex items-center justify-center">
-                    <Edit className="mr-2" size={20} />
-                    Back to Dashboard
-                </button>
-            </aside>
+    const handleDownload = () => {
+        window.print();
+    };
 
-            {/* Right Panel */}
-            <main className="flex-1 p-8 flex items-center justify-center">
-                {/* Pass the ref directly to the ResumePreview component */}
-                <ResumePreview
-                    ref={componentRef}
-                    formData={resumeData.personalInfo}
-                    experiences={resumeData.experiences}
-                    educationData={resumeData.education}
-                    skills={resumeData.skills}
-                    summary={resumeData.summary}
-                    moreDetails={resumeData.moreDetails}
-                />
+    const handleSave = () => {
+        alert("Resume saved!");
+        navigate('/dashboard');
+    };
+    
+    // Render the selected template with the chosen color
+    const renderTemplate = () => {
+        const props = {
+            // DO NOT pass the ref here
+            color: selectedColor,
+            formData: resumeData.personalInfo,
+            experiences: resumeData.experiences,
+            educationData: resumeData.education,
+            skills: resumeData.skills,
+            summary: resumeData.summary,
+            moreDetails: resumeData.moreDetails,
+        };
+
+        switch (selectedTemplate) {
+            case 'Template1': return <Template1 {...props} />;
+            case 'Template2': return <Template2 {...props} />;
+            case 'Template3': return <Template3 {...props} />;
+            default: return <Template1 {...props} />;
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-200 flex">
+            <LeftSidebar 
+                selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                selectedTemplate={selectedTemplate}
+                setSelectedTemplate={setSelectedTemplate}
+            />
+            
+            <main className="flex-1 p-8 overflow-y-auto">
+                {/* ✨ THE REF IS ATTACHED TO THIS WRAPPER DIV ✨ */}
+                <div ref={componentRef}>
+                    {renderTemplate()}
+                </div>
             </main>
+
+            <RightSidebar 
+                onDownload={handleDownload}
+                onSave={handleSave}
+            />
         </div>
     );
 }

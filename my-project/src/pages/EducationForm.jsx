@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ResumePreview from "./ResumePreview";
+import ResumePreview from "../templates/Template1"; // Updated path
 import { useResume } from "../context/ResumeContext";
 
 export default function EducationForm() {

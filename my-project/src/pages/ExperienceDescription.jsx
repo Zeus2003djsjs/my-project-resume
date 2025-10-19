@@ -1,7 +1,7 @@
 // src/pages/ExperienceDescription.jsx
 
 import { useState, useRef, useEffect } from "react";
-import ResumePreview from "./ResumePreview";
+import ResumePreview from "../templates/Template1"; // Updated path
 import { useNavigate, useParams } from "react-router-dom"; // Import useParams
 import { useResume } from "../context/ResumeContext";
 

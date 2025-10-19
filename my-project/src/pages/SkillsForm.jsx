@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react"; // Import useEffect
 import { useNavigate } from "react-router-dom";
-import ResumePreview from "./ResumePreview";
+import ResumePreview from "../templates/Template1"; // Updated path
 import { useResume } from "../context/ResumeContext.jsx"; // Import the context hook
 
 export default function SkillsForm() {
