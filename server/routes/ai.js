@@ -20,7 +20,7 @@ router.post('/enhance', auth, async (req, res) => {
 
   try {
     // Select the generative model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro-latest" });
 
     // Define the prompt for the AI
     const prompt = `Proofread and professionally rewrite the following resume ${promptType} to be more impactful and concise, while retaining the core meaning. Do not add any introductory phrases like "Here's the rewritten version". Just provide the rewritten text directly:\n\n"${text}"`;
