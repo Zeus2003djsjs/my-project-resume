@@ -2,23 +2,22 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import ResumePreview from "../templates/Template1"; // Updated path
-import { useResume } from "../context/ResumeContext.jsx"; // Import the context hook
+import ResumePreview from "../templates/Template1";
+import { useResume } from "../context/ResumeContext.jsx";
+import api from "../utils/api"; 
 
 export default function SummaryForm() {
     const navigate = useNavigate();
     const textAreaRef = useRef(null); 
-    const { resumeData, updateSection } = useResume(); // Get real data and update function
+    const { resumeData, updateSection } = useResume();
 
-    // Initialize state with the summary from the context
-    const [summaryText, setSummaryText] = useState(resumeData.summary); 
+    const [summaryText, setSummaryText] = useState(resumeData.summary);
+    const [isEnhancing, setIsEnhancing] = useState(false);
 
-    // Sync local state if context data changes
     useEffect(() => {
         setSummaryText(resumeData.summary);
     }, [resumeData.summary]);
 
-    // Mock suggestions
     const [suggestions] = useState([
         "Customer satisfaction and driving positive outcomes.",
         "Experienced and dependable general worker with a proven track record of efficiently completing tasks in various settings.",
@@ -26,24 +25,37 @@ export default function SummaryForm() {
         "Experienced professional with a strong background in technology-related roles.",
     ]);
 
-    // This handler now saves the summary to the backend as you type
     const handleEditorChange = (e) => {
         setSummaryText(e.target.value);
         updateSection('summary', e.target.value);
     };
 
     const handleReplaceOrAdd = (newText, action) => {
-        const updatedText = action === 'Replace' ? newText : `${summaryText}\n${newText}`;
+        const updatedText = action === 'Replace' ? newText : `${summaryText || ''}\n${newText}`;
         setSummaryText(updatedText);
-        updateSection('summary', updatedText); // Save change to backend
+        updateSection('summary', updatedText);
     };
     
-    const handleFormat = (tag) => {
-        alert(`Formatting button clicked: ${tag}`);
+    const handleEnhance = async () => {
+        if (!summaryText || summaryText.trim() === '') {
+            alert("Please write a summary first.");
+            return;
+        }
+        setIsEnhancing(true);
+        try {
+            const res = await api.post('/ai/enhance', { text: summaryText, promptType: 'summary' });
+            const { enhancedText } = res.data;
+            setSummaryText(enhancedText);
+            updateSection('summary', enhancedText);
+        } catch (err) {
+            console.error("AI enhancement failed:", err);
+            alert("Sorry, we couldn't enhance the text right now.");
+        }
+        setIsEnhancing(false);
     };
 
     const handleContinue = () => {
-        updateSection('summary', summaryText); // Final save
+        updateSection('summary', summaryText);
         navigate("/more-details");
     };
     
@@ -62,7 +74,6 @@ export default function SummaryForm() {
             <main className="flex-1 p-10 relative">
                 <h1 className="text-3xl font-bold mb-2">Craft your summary</h1>
                 <p className="text-gray-600 mb-8 max-w-xl">Start with a prewritten option or write your own.</p>
-
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl">
                     
                     {/* Suggestions Panel */}
@@ -86,14 +97,18 @@ export default function SummaryForm() {
                         <div className="bg-white p-0 rounded-lg flex flex-col border border-gray-300 shadow-md flex-grow max-h-[80vh]">
                             <div className="flex justify-between p-2 border-b border-gray-200">
                                 <div className="space-x-3 text-lg">
-                                    <button type="button" onClick={() => handleFormat('bold')} className="font-bold">B</button>
-                                    <button type="button" onClick={() => handleFormat('italic')} className="italic">I</button>
-                                    <button type="button" onClick={() => handleFormat('underline')} className="underline">U</button>
+                                    <button type="button" className="font-bold">B</button>
+                                    <button type="button" className="italic">I</button>
+                                    <button type="button" className="underline">U</button>
                                 </div>
                                 <div className="space-x-3 text-lg">
-                                    <button type="button" onClick={() => handleFormat('undo')}>↺</button>
-                                    <button type="button" onClick={() => handleFormat('redo')}>↻</button>
-                                    <button className="bg-yellow-400 px-3 py-1 rounded-md text-sm font-semibold hover:bg-yellow-500">✨ Enhance with AI</button>
+                                    <button
+                                        onClick={handleEnhance}
+                                        disabled={isEnhancing}
+                                        className="bg-yellow-400 px-3 py-1 rounded-md text-sm font-semibold hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                    >
+                                        {isEnhancing ? "Enhancing..." : "✨ Enhance with AI"}
+                                    </button>
                                 </div>
                             </div>
                             <textarea
@@ -114,15 +129,14 @@ export default function SummaryForm() {
                 </div>
             </main>
 
-            {/* Resume Preview Panel */}
+            {/* ✨ THIS IS THE MISSING SECTION ✨ */}
             <aside className="w-96 p-4 bg-white shadow-lg border-l sticky top-0 h-screen overflow-y-auto flex flex-col items-center">
-                {/* ✨ Pass all the real data to the preview component ✨ */}
                 <ResumePreview 
                     formData={resumeData.personalInfo}
                     experiences={resumeData.experiences}
                     educationData={resumeData.education}
                     skills={resumeData.skills}
-                    summary={summaryText} // Use the live summary text from the editor
+                    summary={summaryText}
                 />
                 <div className="text-center mt-4">
                     <button className="text-blue-600 font-semibold hover:underline">Change template</button>
@@ -130,4 +144,4 @@ export default function SummaryForm() {
             </aside>
         </div>
     );
-}   
+}

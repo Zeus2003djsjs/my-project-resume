@@ -17,6 +17,7 @@ app.use(express.json()); // for parsing application/json
 // Define Routes
 app.use('/api/auth', require('./routes/auth')); // 👈 Add this line
 app.use('/api/resumes', require('./routes/resumes')); // 👈 Add this line
+app.use('/api/ai', require('./routes/ai')); // ✨ ADD THIS LINE
 
 // A simple test route
 app.get('/', (req, res) => {
