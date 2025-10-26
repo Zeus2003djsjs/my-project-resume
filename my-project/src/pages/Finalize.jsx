@@ -59,6 +59,7 @@ export default function Finalize() {
     return (
         <div className="min-h-screen bg-gray-200 flex">
             <LeftSidebar 
+                className="no-print"
                 selectedColor={selectedColor}
                 setSelectedColor={setSelectedColor}
                 selectedTemplate={selectedTemplate}
@@ -73,6 +74,7 @@ export default function Finalize() {
             </main>
 
             <RightSidebar 
+                className="no-print"
                 onDownload={handleDownload}
                 onSave={handleSave}
             />

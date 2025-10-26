@@ -165,4 +165,17 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/resumes/all
+// @desc    Get all resumes for the logged-in user
+// @access  Private
+router.get('/all', auth, async (req, res) => {
+  try {
+    const resumes = await Resume.find({ user: req.user.id });
+    res.json(resumes);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;

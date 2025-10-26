@@ -18,6 +18,8 @@ import SkillsForm from "./pages/SkillsForm.jsx";
 import SummaryForm from "./pages/SummaryForm.jsx"; 
 import MoreDetailsForm from "./pages/MoreDetailsForm.jsx";
 import Finalize from "./pages/Finalize.jsx"; // ✨ IMPORT THE NEW PAGE
+import MyResumes from "./pages/MyResumes"; // 👈 Import the new component
+import Profile from "./pages/Profile"; // 👈 Import the new component
 
 function App() {
   return (
@@ -27,8 +29,8 @@ function App() {
       <Route path="/register" element={<Register />} /> {/* 👈 Add this route */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/resumeform" element={<ResumeForm />} />
-      <Route path="/myresumes" element={<h1>My Resumes Page (WIP)</h1>} />
-      <Route path="/profile" element={<h1>Profile Settings Page (WIP)</h1>} />
+      <Route path="/myresumes" element={<MyResumes />} /> {/* 👈 Update this route */}
+      <Route path="/profile" element={<Profile />} /> {/* 👈 Update this route */}
       <Route path="/experience" element={<ExperienceForm />} />
       <Route path="/experience-description" element={<ExperienceDescription />} />
       
