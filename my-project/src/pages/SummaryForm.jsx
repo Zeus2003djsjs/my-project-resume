@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ResumePreview from "../templates/Template1";
 import { useResume } from "../context/ResumeContext.jsx";
 import api from "../utils/api"; 
+import toast from 'react-hot-toast'; // ✨ Import toast
 
 export default function SummaryForm() {
     const navigate = useNavigate();
@@ -38,7 +39,7 @@ export default function SummaryForm() {
     
     const handleEnhance = async () => {
         if (!summaryText || summaryText.trim() === '') {
-            alert("Please write a summary first.");
+            toast.error("Please write a summary first."); // ✨ Use error toast
             return;
         }
         setIsEnhancing(true);
@@ -47,9 +48,10 @@ export default function SummaryForm() {
             const { enhancedText } = res.data;
             setSummaryText(enhancedText);
             updateSection('summary', enhancedText);
+            toast.success("Summary enhanced by AI!"); // ✨ Use success toast
         } catch (err) {
             console.error("AI enhancement failed:", err);
-            alert("Sorry, we couldn't enhance the text right now.");
+            toast.error("Sorry, AI enhancement failed."); // ✨ Use error toast
         }
         setIsEnhancing(false);
     };

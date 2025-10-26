@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from '../utils/api'; 
 import { useResume } from "../context/ResumeContext"; // ✨ IMPORT useResume HOOK ✨
+import toast from 'react-hot-toast'; // ✨ Import toast
 
 export default function Login() {
   const [email, setEmail] = useState("test@example.com");
@@ -17,12 +18,12 @@ export default function Login() {
       const res = await api.post('/auth/login', { email, password });
       
       login(res.data.token); // ✨ USE THE CONTEXT'S LOGIN FUNCTION ✨
-      
+      toast.success('Login Successful!'); // ✨ Use success toast
       navigate("/dashboard");
 
     } catch (err) {
+      toast.error('Invalid email or password'); // ✨ Use error toast
       console.error("Login Error:", err.response ? err.response.data : err.message);
-      alert("❌ Invalid email or password");
     }
   };
 

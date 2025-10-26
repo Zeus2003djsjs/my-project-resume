@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api, { setAuthToken } from '../utils/api';
+import toast from 'react-hot-toast'; // ✨ Import toast
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -24,12 +25,13 @@ export default function Register() {
       // After successful registration, the backend returns a token.
       // We'll log the user in automatically.
       setAuthToken(res.data.token);
+      toast.success('Successfully Registered!'); // ✨ Use success toast
       navigate("/dashboard");
     } catch (err) {
   // This will get the specific error message from the backend if it exists
   const message = err.response?.data?.msg || "Could not register user. Please try again.";
+  toast.error(message); // ✨ Use error toast
   console.error("Registration Error:", err.response ? err.response.data : err.message);
-  alert(`Error: ${message}`);
 }
   };
 

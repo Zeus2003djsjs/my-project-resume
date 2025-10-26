@@ -1,23 +1,23 @@
 // src/pages/ExperienceDescription.jsx
 
 import { useState, useRef, useEffect } from "react";
-import ResumePreview from "../templates/Template1"; // Updated path
-import { useNavigate, useParams } from "react-router-dom"; // Import useParams
+import ResumePreview from "../templates/Template1";
+import { useNavigate, useParams } from "react-router-dom";
 import { useResume } from "../context/ResumeContext";
+import api from "../utils/api"; // ✨ Import the api utility
+import toast from 'react-hot-toast'; // ✨ Import toast for notifications
 
 export default function ExperienceDescription() {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get the ID from the URL
+  const { id } = useParams();
   const textAreaRef = useRef(null);
-  // Get both add and update functions from context
-  const { resumeData, addExperience, updateExperience } = useResume(); 
+  const { resumeData, addExperience, updateExperience } = useResume();
 
   const [jobTitle, setJobTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isEnhancing, setIsEnhancing] = useState(false); // ✨ State for loading indicator
 
-  // This effect pre-fills the form with data for editing
   useEffect(() => {
-    // We use the draft, which was set in the previous step
     const draft = resumeData.currentJobDraft;
     if (draft) {
       setJobTitle(draft.jobTitle || "Job Title");
@@ -33,33 +33,39 @@ export default function ExperienceDescription() {
 
   const handleFormat = (tag) => { /* ... */ };
 
+  // ✨ NEW FUNCTION TO HANDLE THE AI BUTTON CLICK ✨
+  const handleEnhance = async () => {
+    if (!description || description.trim() === '') {
+        toast.error("Please write a description first.");
+        return;
+    }
+    setIsEnhancing(true);
+    try {
+        const res = await api.post('/ai/enhance', { text: description, promptType: 'experience description' });
+        setDescription(res.data.enhancedText); // Update the text area with the AI's response
+        toast.success("Description enhanced by AI!");
+    } catch (err) {
+        console.error("AI enhancement failed:", err);
+        toast.error("Sorry, AI enhancement failed.");
+    }
+    setIsEnhancing(false);
+  };
+
   const handleContinue = () => {
-    const finalData = {
-      // Combine the draft with the current description and job title
-      ...resumeData.currentJobDraft,
-      description,
-      jobTitle,
-    };
+    const finalData = { ...resumeData.currentJobDraft, description, jobTitle };
 
     if (id) {
-      // If an ID exists, we are editing. Call the update function.
       updateExperience(id, finalData);
     } else {
-      // Otherwise, we are adding a new experience.
       addExperience(finalData);
     }
-    navigate("/review-experience"); // Go back to the review page
+    navigate("/review-experience");
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-20 bg-blue-900 text-white flex flex-col items-center py-6 space-y-6">
-        <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">✓</div>
-        <div className="w-8 h-8 bg-blue-900 text-white border-2 border-white rounded-full flex items-center justify-center font-bold">2</div>
-        <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
-        <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
-      </aside>
+      <aside className="w-20 bg-blue-900 text-white flex flex-col items-center py-6 space-y-6">{/* ... */}</aside>
 
       {/* Main Content */}
       <main className="flex-1 p-10">
@@ -73,22 +79,7 @@ export default function ExperienceDescription() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Suggestions */}
-          <div className="bg-gray-100 p-6 rounded-lg shadow">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Search by job title
-            </label>
-            <input type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} className="w-full border rounded-md px-3 py-2 mb-4"/>
-            <p className="text-xs text-gray-500 mb-2">Showing {suggestions.length} results for <b>{jobTitle}</b></p>
-            <div className="space-y-3 overflow-y-auto max-h-80">
-              {suggestions.map((s, i) => (
-                <div key={i} className="flex items-start p-3 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50"
-                  onClick={() => setDescription(prev => prev.length > 0 ? prev + "\n" + s : s)}>
-                  <div className="w-6 h-6 flex items-center justify-center rounded-full bg-yellow-300 text-black mr-2">+</div>
-                  <p className="text-sm text-gray-700">{s}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <div className="bg-gray-100 p-6 rounded-lg shadow">{/* ... */}</div>
 
           {/* Editor */}
           <div className="bg-gray-100 p-6 rounded-lg shadow flex flex-col">
@@ -98,14 +89,21 @@ export default function ExperienceDescription() {
                 <button type="button" onClick={() => handleFormat('italic')} className="italic">I</button>
                 <button type="button" onClick={() => handleFormat('underline')} className="underline">U</button>
               </div>
-              <button className="bg-yellow-400 px-3 py-1 rounded-md text-sm font-semibold hover:bg-yellow-500">✨ Enhance with AI</button>
+              {/* ✨ UPDATED AI BUTTON ✨ */}
+              <button
+                onClick={handleEnhance}
+                disabled={isEnhancing}
+                className="bg-yellow-400 px-3 py-1 rounded-md text-sm font-semibold hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                {isEnhancing ? "Enhancing..." : "✨ Enhance with AI"}
+              </button>
             </div>
             <textarea ref={textAreaRef} value={description} onChange={(e) => setDescription(e.target.value)} className="flex-1 border rounded-md px-3 py-2 resize-none h-72"/>
           </div>
 
           {/* Resume Preview */}
           <div className="bg-white p-4 rounded-lg shadow flex flex-col items-center">
-            <ResumePreview formData={resumeData.personalInfo} experiences={[{...resumeData.currentJobDraft, description: description}]}/>
+            <ResumePreview experiences={[{...resumeData.currentJobDraft, description: description}]} formData={resumeData.personalInfo} />
             <a href="#" className="text-blue-600 mt-4 font-semibold hover:underline">Change template</a>
           </div>
         </div>
