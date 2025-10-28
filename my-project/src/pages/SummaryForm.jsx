@@ -140,9 +140,7 @@ export default function SummaryForm() {
                     skills={resumeData.skills}
                     summary={summaryText}
                 />
-                <div className="text-center mt-4">
-                    <button className="text-blue-600 font-semibold hover:underline">Change template</button>
-                </div>
+                
             </aside>
         </div>
     );

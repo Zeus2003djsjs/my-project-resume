@@ -12,8 +12,7 @@ const RightSidebar = ({ onDownload, onSave }) => {
         <button onClick={onDownload} className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg font-bold hover:bg-gray-300 transition flex items-center justify-center">
           <Download size={20} className="mr-2"/> Download
         </button>
-        <button onClick={onDownload} className="p-2 bg-gray-200 rounded-lg"><Printer size={20}/></button>
-        <button className="p-2 bg-gray-200 rounded-lg"><Mail size={20}/></button>
+        
       </div>
 
       <button onClick={onSave} className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition mb-6">
@@ -34,7 +33,7 @@ const RightSidebar = ({ onDownload, onSave }) => {
             </li>
           ))}
         </ul>
-        <button className="text-blue-600 font-semibold mt-3">+ Add a section</button>
+        
       </div>
     </aside>
   );

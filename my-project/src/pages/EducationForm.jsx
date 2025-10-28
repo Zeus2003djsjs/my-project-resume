@@ -135,11 +135,6 @@ export default function EducationForm() {
                     skills={resumeData.skills}
                     summary={resumeData.summary}
                 />
-                <div className="text-center mt-4">
-                    <button className="text-blue-600 font-semibold hover:underline">
-                        Change template
-                    </button>
-                </div>
             </aside>
         </div>
     );

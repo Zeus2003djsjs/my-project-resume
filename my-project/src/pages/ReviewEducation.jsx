@@ -111,11 +111,7 @@ export default function ReviewEducation() {
                     formData={personalInfo} 
                     educationData={education} // Pass the whole array to the preview
                 />
-                <div className="text-center mt-4">
-                    <button className="text-blue-600 font-semibold hover:underline">
-                        Change template
-                    </button>
-                </div>
+                
             </aside>
         </div>
     );

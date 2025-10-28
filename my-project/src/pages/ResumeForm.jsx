@@ -138,7 +138,6 @@ export default function ResumeForm() {
             {/* Resume Preview */}
             <aside className="w-1/3 bg-white flex flex-col items-center p-4 shadow-lg">
                 <ResumePreview formData={formData} />
-                <a href="#" className="text-blue-600 mt-4 font-semibold hover:underline">Change template</a>
             </aside>
         </div>
     );

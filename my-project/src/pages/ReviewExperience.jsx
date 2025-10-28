@@ -124,11 +124,7 @@ export default function ReviewExperience() {
                     formData={personalInfo} 
                     experiences={experiences} // ✨ Pass the entire experiences array
                 />
-                <div className="text-center mt-4">
-                    <button className="text-blue-600 font-semibold hover:underline">
-                        Change template
-                    </button>
-                </div>
+                
             </aside>
         </div>
     );

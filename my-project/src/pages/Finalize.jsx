@@ -9,6 +9,8 @@ import RightSidebar from './RightSidebar';
 import Template1 from '../templates/Template1';
 import Template2 from '../templates/Template2';
 import Template3 from '../templates/Template3';
+import Template4 from '../templates/Template4'; // ✨ Import the new template
+import Template5 from '../templates/Template5'; // ✨ Import the new template
 
 export default function Finalize() {
     const { resumeData } = useResume();
@@ -41,6 +43,8 @@ export default function Finalize() {
             case 'Template1': return <Template1 {...props} />;
             case 'Template2': return <Template2 {...props} />;
             case 'Template3': return <Template3 {...props} />;
+            case 'Template4': return <Template4 {...props} />; // ✨ Add the new case
+            case 'Template5': return <Template5 {...props} />; // ✨ Add the new case
             default: return <Template1 {...props} />;
         }
     };

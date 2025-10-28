@@ -104,7 +104,7 @@ export default function ExperienceDescription() {
           {/* Resume Preview */}
           <div className="bg-white p-4 rounded-lg shadow flex flex-col items-center">
             <ResumePreview experiences={[{...resumeData.currentJobDraft, description: description}]} formData={resumeData.personalInfo} />
-            <a href="#" className="text-blue-600 mt-4 font-semibold hover:underline">Change template</a>
+            
           </div>
         </div>
 

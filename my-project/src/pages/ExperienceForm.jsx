@@ -114,7 +114,7 @@ export default function ExperienceForm() {
       {/* Resume Preview */}
       <aside className="w-1/3 bg-white flex flex-col items-center p-4 shadow-lg">
         <ResumePreview formData={resumeData.personalInfo} experiences={[formData]} />
-        <a href="#" className="text-blue-600 mt-4 font-semibold hover:underline">Change template</a>
+        
       </aside>
     </div>
   );

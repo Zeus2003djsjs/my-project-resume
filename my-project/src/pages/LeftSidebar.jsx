@@ -7,6 +7,8 @@ import React from 'react';
 import thumb1 from '../assets/template1_thumb.png'; 
 import thumb2 from '../assets/template2_thumb.png';
 import thumb3 from '../assets/template3_thumb.png';
+import thumb4 from '../assets/template4_thumb.png'; // ✨ Import the new thumbnail
+import thumb5 from '../assets/template5_thumb.png'; // ✨ Import the new thumbnail
 
 const LeftSidebar = ({ selectedColor, setSelectedColor, selectedTemplate, setSelectedTemplate }) => {
   const colors = ['#000000', '#1E3A8A', '#2c3e50', '#4A90E2', '#50E3C2', '#B8E986', '#F5A623', '#D0021B'];
@@ -16,6 +18,8 @@ const LeftSidebar = ({ selectedColor, setSelectedColor, selectedTemplate, setSel
     { id: 'Template1', name: 'Classic', thumb: thumb1 },
     { id: 'Template2', name: 'Modern', thumb: thumb2 },
     { id: 'Template3', name: 'Professional', thumb: thumb3 },
+    { id: 'Template4', name: 'Minimalist', thumb: thumb4 }, // ✨ Add the new template
+    { id: 'Template5', name: 'Corporate', thumb: thumb5 }, // ✨ Add the new template
     // Add more templates here as you create them
   ];
 
