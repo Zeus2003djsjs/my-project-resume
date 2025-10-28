@@ -46,7 +46,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-green-400 via-teal-500 to-cyan-600 p-8 text-white">
       {/* Header */}
       <header className="flex justify-between items-center mb-10">
-        <h1 className="text-3xl font-bold text-white">AI Resume Builder ✨</h1>
+        <h1 className="text-3xl font-bold text-white">Online Resume Builder ✨</h1>
         {/* ✨ UPDATE THE BUTTON'S onClick HANDLER ✨ */}
         <button 
           onClick={handleLogout}

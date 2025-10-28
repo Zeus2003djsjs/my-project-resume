@@ -22,6 +22,7 @@ const Template2 = React.forwardRef((props, ref) => {
                     {experienceList.length > 0 && (<div><h2 className="text-xl font-bold uppercase tracking-wider mb-2" style={{ color }}>Experience</h2>{experienceList.map((job, i) => (<div key={job._id || i} className="mb-4"><h3 className="font-semibold text-lg">{job.jobTitle || 'Job Title'}</h3><p className="text-sm text-gray-600 mb-1">{job.employer || 'Employer'} | {job.startMonth || 'Month'} {job.startYear || 'Year'} - {job.current ? "Present" : `${job.endMonth || 'Month'} ${job.endYear || 'Year'}`}</p>{job.description && (<ul className="list-disc list-inside text-sm text-gray-700">{job.description.split('\n').filter(l => l.trim()).map((l, idx) => (<li key={idx} dangerouslySetInnerHTML={{ __html: l }} />))}</ul>)}</div>))}</div>)}
                 </div>
             </div>
+            
         </div>
     );
 });

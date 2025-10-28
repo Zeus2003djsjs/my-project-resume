@@ -136,7 +136,7 @@ export default function MoreDetailsForm() {
                     educationData={resumeData.education}
                     skills={resumeData.skills}
                     summary={resumeData.summary}
-                    moreDetails={detailsData} // ✨ ADD THIS LINE
+                    moreDetails={detailsData} // ✨ ADD THIS LINE (using live form data)
                 />  
 
                 <div className="text-center mt-4">
