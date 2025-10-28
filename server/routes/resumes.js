@@ -178,4 +178,29 @@ router.get('/all', auth, async (req, res) => {
   }
 });
 
+// @route   DELETE api/resumes/:id
+// @desc    Delete a resume
+// @access  Private
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    let resume = await Resume.findById(req.params.id);
+
+    if (!resume) {
+      return res.status(404).json({ msg: 'Resume not found' });
+    }
+
+    // Make sure user owns the resume
+    if (resume.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'Not authorized' });
+    }
+
+    await Resume.findByIdAndDelete(req.params.id);
+
+    res.json({ msg: 'Resume removed' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;

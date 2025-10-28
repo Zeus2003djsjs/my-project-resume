@@ -153,6 +153,20 @@ export function ResumeProvider({ children }) {
     }
   };
 
+// ✨ NEW FUNCTION TO DELETE AN ENTIRE RESUME ✨
+  const deleteResume = async (resumeId) => {
+    if (!isAuthenticated) return;
+    try {
+      await api.delete(`/resumes/${resumeId}`);
+      // After deleting, we might want to reload the list of resumes
+      // For now, we can just show a success message.
+      toast.success('Resume deleted successfully!');
+      // You might want to navigate the user away or refresh the list here.
+    } catch (err) {
+      console.error('Error deleting resume:', err);
+      toast.error('Could not delete resume.');
+    }
+  };
 
   const contextValue = {
     resumeData,
@@ -166,6 +180,7 @@ export function ResumeProvider({ children }) {
     isAuthenticated,
     login,
     logout,
+    deleteResume, // ✨ EXPORT THE NEW FUNCTION ✨
   };
 
   return (
