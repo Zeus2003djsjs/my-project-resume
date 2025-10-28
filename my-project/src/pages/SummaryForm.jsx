@@ -99,9 +99,7 @@ export default function SummaryForm() {
                         <div className="bg-white p-0 rounded-lg flex flex-col border border-gray-300 shadow-md flex-grow max-h-[80vh]">
                             <div className="flex justify-between p-2 border-b border-gray-200">
                                 <div className="space-x-3 text-lg">
-                                    <button type="button" className="font-bold">B</button>
-                                    <button type="button" className="italic">I</button>
-                                    <button type="button" className="underline">U</button>
+                                    
                                 </div>
                                 <div className="space-x-3 text-lg">
                                     <button

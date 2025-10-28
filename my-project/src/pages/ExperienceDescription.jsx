@@ -85,9 +85,7 @@ export default function ExperienceDescription() {
           <div className="bg-gray-100 p-6 rounded-lg shadow flex flex-col">
             <div className="flex justify-between mb-2">
               <div className="space-x-3">
-                <button type="button" onClick={() => handleFormat('bold')} className="font-bold">B</button>
-                <button type="button" onClick={() => handleFormat('italic')} className="italic">I</button>
-                <button type="button" onClick={() => handleFormat('underline')} className="underline">U</button>
+                
               </div>
               {/* ✨ UPDATED AI BUTTON ✨ */}
               <button
